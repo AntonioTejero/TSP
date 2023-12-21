@@ -1,6 +1,7 @@
 import sys
 
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import time
 import copy
@@ -57,8 +58,9 @@ class MainWindow(QtWidgets.QMainWindow):
         solverLayout = QtWidgets.QVBoxLayout(solverGroup)
         algorithmSelectionBox = QtWidgets.QComboBox()
         algorithmSelectionBox.addItem("Exact")
-        algorithmSelectionBox.addItem("Nearest neighbour")
+        algorithmSelectionBox.addItem("Closest neighbour")
         algorithmSelectionBox.addItem("Simulated annealing")
+        algorithmSelectionBox.addItem("Genetic algorithm")
         algorithmSelectionBox.setEnabled(False)
         solverLayout.addWidget(algorithmSelectionBox)
         algorithmSelectionBox.currentTextChanged.connect(self.algorithmSelectedChanged)
@@ -100,15 +102,6 @@ class MainWindow(QtWidgets.QMainWindow):
         coolingRateSpinBox.setDecimals(3)
         coolingRateLayout.addWidget(coolingRateSpinBox)
         self.coolingRateSpinBox = coolingRateSpinBox
-        stopingCriteriaSimulatedAnnealingLayout = QtWidgets.QHBoxLayout()
-        solverConfLayoutSimulatedAnnealing.addLayout(stopingCriteriaSimulatedAnnealingLayout)
-        stopingCriteriaSimulatedAnnealingLabel = QtWidgets.QLabel("Stoping criteria:")
-        stopingCriteriaSimulatedAnnealingLayout.addWidget(stopingCriteriaSimulatedAnnealingLabel)
-        stopingCriteriaSimulatedAnnealingSpinBox = QtWidgets.QSpinBox()
-        stopingCriteriaSimulatedAnnealingSpinBox.setMinimum(10)
-        stopingCriteriaSimulatedAnnealingSpinBox.setMaximum(10000)
-        stopingCriteriaSimulatedAnnealingLayout.addWidget(stopingCriteriaSimulatedAnnealingSpinBox)
-        self.stopingCriteriaSimulatedAnnealingSpinBox = stopingCriteriaSimulatedAnnealingSpinBox
         initialRouteLayout = QtWidgets.QHBoxLayout()
         solverConfLayoutSimulatedAnnealing.addLayout(initialRouteLayout)
         initialRouteLabel = QtWidgets.QLabel("Initial route:")
@@ -128,6 +121,61 @@ class MainWindow(QtWidgets.QMainWindow):
         newRouteSelectionBox.addItem("Swap")
         newRouteSelectionBox.addItem("Inverse")
         self.newRouteSelectionBox = newRouteSelectionBox
+        stopingCriteriaSimulatedAnnealingLayout = QtWidgets.QHBoxLayout()
+        solverConfLayoutSimulatedAnnealing.addLayout(stopingCriteriaSimulatedAnnealingLayout)
+        stopingCriteriaSimulatedAnnealingLabel = QtWidgets.QLabel("Stoping criteria:")
+        stopingCriteriaSimulatedAnnealingLayout.addWidget(stopingCriteriaSimulatedAnnealingLabel)
+        stopingCriteriaSimulatedAnnealingSpinBox = QtWidgets.QSpinBox()
+        stopingCriteriaSimulatedAnnealingSpinBox.setMinimum(10)
+        stopingCriteriaSimulatedAnnealingSpinBox.setMaximum(10000)
+        stopingCriteriaSimulatedAnnealingLayout.addWidget(stopingCriteriaSimulatedAnnealingSpinBox)
+        self.stopingCriteriaSimulatedAnnealingSpinBox = stopingCriteriaSimulatedAnnealingSpinBox
+        solverConfWidgetGeneticAlgorithm = QtWidgets.QWidget()
+        solverConfLayout.addWidget(solverConfWidgetGeneticAlgorithm)
+        solverConfLayoutGeneticAlgorithm = QtWidgets.QVBoxLayout(solverConfWidgetGeneticAlgorithm)
+        solverConfLayoutGeneticAlgorithm.setContentsMargins(0,11,11,11)
+        populationSizeGeneticAlgorithmLayout = QtWidgets.QHBoxLayout()
+        solverConfLayoutGeneticAlgorithm.addLayout(populationSizeGeneticAlgorithmLayout)
+        populationSizeGeneticAlgorithmLabel =QtWidgets.QLabel("Population size:")
+        populationSizeGeneticAlgorithmLayout.addWidget(populationSizeGeneticAlgorithmLabel)
+        populationSizeGeneticAlgorithmSpinBox = QtWidgets.QSpinBox()
+        populationSizeGeneticAlgorithmSpinBox.setMinimum(10)
+        populationSizeGeneticAlgorithmSpinBox.setMaximum(1000)
+        populationSizeGeneticAlgorithmSpinBox.setValue(100)
+        populationSizeGeneticAlgorithmLayout.addWidget(populationSizeGeneticAlgorithmSpinBox)
+        self.populationSizeGeneticAlgorithmSpinBox = populationSizeGeneticAlgorithmSpinBox
+        elitePercentageGeneticAlgorithmLayout = QtWidgets.QHBoxLayout()
+        solverConfLayoutGeneticAlgorithm.addLayout(elitePercentageGeneticAlgorithmLayout)
+        elitePercentageGeneticAlgorithmLabel =QtWidgets.QLabel("Elite percentage:")
+        elitePercentageGeneticAlgorithmLayout.addWidget(elitePercentageGeneticAlgorithmLabel)
+        elitePercentageGeneticAlgorithmSpinBox = QtWidgets.QDoubleSpinBox()
+        elitePercentageGeneticAlgorithmSpinBox.setRange(0,1)
+        elitePercentageGeneticAlgorithmSpinBox.setSingleStep(0.001)
+        elitePercentageGeneticAlgorithmSpinBox.setDecimals(3)
+        elitePercentageGeneticAlgorithmSpinBox.setValue(0.01)
+        elitePercentageGeneticAlgorithmLayout.addWidget(elitePercentageGeneticAlgorithmSpinBox)
+        self.elitePercentageGeneticAlgorithmSpinBox = elitePercentageGeneticAlgorithmSpinBox
+        mutationRateGeneticAlgorithmLayout = QtWidgets.QHBoxLayout()
+        solverConfLayoutGeneticAlgorithm.addLayout(mutationRateGeneticAlgorithmLayout)
+        mutationRateGeneticAlgorithmLabel =QtWidgets.QLabel("Mutation rate:")
+        mutationRateGeneticAlgorithmLayout.addWidget(mutationRateGeneticAlgorithmLabel)
+        mutationRateGeneticAlgorithmSpinBox = QtWidgets.QDoubleSpinBox()
+        mutationRateGeneticAlgorithmSpinBox.setRange(0,1)
+        mutationRateGeneticAlgorithmSpinBox.setSingleStep(0.001)
+        mutationRateGeneticAlgorithmSpinBox.setDecimals(3)
+        mutationRateGeneticAlgorithmSpinBox.setValue(0.05)
+        mutationRateGeneticAlgorithmLayout.addWidget(mutationRateGeneticAlgorithmSpinBox)
+        self.mutationRateGeneticAlgorithmSpinBox = mutationRateGeneticAlgorithmSpinBox
+        stopingCriteriaGeneticAlgorithmLayout = QtWidgets.QHBoxLayout()
+        solverConfLayoutGeneticAlgorithm.addLayout(stopingCriteriaGeneticAlgorithmLayout)
+        stopingCriteriaGeneticAlgorithmLabel = QtWidgets.QLabel("Stoping criteria:")
+        stopingCriteriaGeneticAlgorithmLayout.addWidget(stopingCriteriaGeneticAlgorithmLabel)
+        stopingCriteriaGeneticAlgorithmSpinBox = QtWidgets.QSpinBox()
+        stopingCriteriaGeneticAlgorithmSpinBox.setMinimum(10)
+        stopingCriteriaGeneticAlgorithmSpinBox.setMaximum(10000)
+        stopingCriteriaGeneticAlgorithmSpinBox.setValue(1000)
+        stopingCriteriaGeneticAlgorithmLayout.addWidget(stopingCriteriaGeneticAlgorithmSpinBox)
+        self.stopingCriteriaGeneticAlgorithmSpinBox = stopingCriteriaGeneticAlgorithmSpinBox
         
         self.solverConfLayout = solverConfLayout
         solverConfLayoutSimulatedAnnealing.addStretch()
@@ -263,11 +311,14 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.algorithmSelectionBox.currentText() == "Exact" and self.numberOfCities<=10 and self.solutionsExactRoute == []:
                 self.solverConfLayout.setCurrentIndex(0)
                 self.solveItButton.setEnabled(True)
-            elif self.algorithmSelectionBox.currentText() == "Nearest neighbour" and self.solutionsClosestNeighbourRoute == []:
+            elif self.algorithmSelectionBox.currentText() == "Closest neighbour" and self.solutionsClosestNeighbourRoute == []:
                 self.solverConfLayout.setCurrentIndex(0)
                 self.solveItButton.setEnabled(True)
             elif self.algorithmSelectionBox.currentText() == "Simulated annealing":
                 self.solverConfLayout.setCurrentIndex(1)
+                self.solveItButton.setEnabled(True)
+            elif self.algorithmSelectionBox.currentText() == "Genetic algorithm":
+                self.solverConfLayout.setCurrentIndex(2)
                 self.solveItButton.setEnabled(True)
             else:
                 self.solveItButton.setEnabled(False)
@@ -279,10 +330,12 @@ class MainWindow(QtWidgets.QMainWindow):
         print(self.algorithmSelectionBox.currentText())
         if self.algorithmSelectionBox.currentText() == "Exact":
             self.solveExact()
-        elif self.algorithmSelectionBox.currentText() == "Nearest neighbour":
+        elif self.algorithmSelectionBox.currentText() == "Closest neighbour":
             self.solveNearestNeighbour()
         elif self.algorithmSelectionBox.currentText() == "Simulated annealing":
             self.solveSimulatedAnnealing()
+        elif self.algorithmSelectionBox.currentText() == "Genetic algorithm":
+            self.solveGeneticAlgorithm()
         else:
             print("No luck...")
             
@@ -399,6 +452,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def solveSimulatedAnnealing(self):
         
+        # disable elements of the GUI during the execution of the algorithm
         self.numberOfCitiesSpinBox.setEnabled(False)
         self.generateButton.setEnabled(False)
         self.algorithmSelectionBox.setEnabled(False)
@@ -412,72 +466,76 @@ class MainWindow(QtWidgets.QMainWindow):
         
         startTime = time.time()
         
+        # get user defined configuration from GUI elements
+        numberOfCities = self.numberOfCities
         temperature = self.initialTemperatureSpinBox.value()
         coolingRate = self.coolingRateSpinBox.value()
+        maxIterationsWithoutUpdate = self.stopingCriteriaSimulatedAnnealingSpinBox.value()
+        initialRouteMethod = self.initialRouteSelectionBox.currentText()
+        newRouteMethod = self.newRouteSelectionBox.currentText()
         
         # generate initial route according to user solutionSelectionBox
-        if self.initialRouteSelectionBox.currentText() == "Ordered":
+        if initialRouteMethod == "Ordered":
             # generate ordered sequence from 0 to numberOfCities-1
             oldRoute = list(range(self.numberOfCities))
             # append initial city to the route (circular route)
             oldRoute.append(oldRoute[0])
-        elif self.initialRouteSelectionBox.currentText() == "Random":
+        elif initialRouteMethod == "Random":
             # generate initial route randomly
             auxArray = np.random.uniform(0,1,self.numberOfCities)
             oldRoute = list(np.argsort(auxArray))
             # append initial city to the route (circular route)
             oldRoute.append(oldRoute[0])
-        elif self.initialRouteSelectionBox.currentText() == "Closest neighbour":
+        elif initialRouteMethod == "Closest neighbour":
             # select route obtained in the Closest neighbour algorithm
             oldRoute = self.solutionsClosestNeighbourRoute
             
         # evaluate initial route total distance
         oldRouteTotalDistance = 0
-        for idx in range(self.numberOfCities):
+        for idx in range(numberOfCities):
             i = oldRoute[idx]
             j = oldRoute[idx+1]
             oldRouteTotalDistance = oldRouteTotalDistance + self.distance[i][j]
         
         # initialize counter for convergence criteria
         iterationsWithoutUpdate = 0
-        maxIterationsWithoutUpdate = self.stopingCriteriaSimulatedAnnealingSpinBox.value()
-        
-        # main algorithm cycle
         iterationArray = [0]
         totalDistanceArray = [oldRouteTotalDistance]
+        
+        # main algorithm cycle
         while iterationsWithoutUpdate < maxIterationsWithoutUpdate:
             # generate new route
-            if self.newRouteSelectionBox.currentText() == "Random":
+            if newRouteMethod == "Random":
                 # random new route
-                auxArray = np.random.uniform(0,1,self.numberOfCities)
+                auxArray = np.random.uniform(0,1,numberOfCities)
                 newRoute = list(np.argsort(auxArray))
                 newRoute.append(newRoute[0])
-            elif self.newRouteSelectionBox.currentText() == "Swap":
+            elif newRouteMethod == "Swap":
                 # generate random indices for swap and inverse operators
-                i = np.random.choice(range(self.numberOfCities-1))
+                i = np.random.choice(range(numberOfCities-1))
                 while i==0:
-                    i = np.random.choice(range(self.numberOfCities))
-                j = np.random.choice(range(self.numberOfCities-1))
+                    i = np.random.choice(range(numberOfCities))
+                j = np.random.choice(range(numberOfCities-1))
                 while j==i or j==0:
-                    j = np.random.choice(range(self.numberOfCities))
+                    j = np.random.choice(range(numberOfCities))
                 # swap new route
                 newRoute = copy.copy(oldRoute)
                 newRoute[j], newRoute[i] = newRoute[i], newRoute[j]
-            elif self.newRouteSelectionBox.currentText() == "Inverse":
+            elif newRouteMethod == "Inverse":
                 # generate random indices for swap and inverse operators
-                i = np.random.choice(range(self.numberOfCities-1))
+                i = np.random.choice(range(numberOfCities-1))
                 while i==0:
-                    i = np.random.choice(range(self.numberOfCities))
-                j = np.random.choice(range(self.numberOfCities-1))
+                    i = np.random.choice(range(numberOfCities))
+                j = np.random.choice(range(numberOfCities-1))
                 while j==i or j==0:
-                    j = np.random.choice(range(self.numberOfCities))
+                    j = np.random.choice(range(numberOfCities))
                 # inverse new route
                 newRoute = copy.copy(oldRoute)
                 newRoute[min(i,j):max(i,j)+1] = newRoute[max(i,j):min(i,j)-1:-1]
             
             # evaluate new route total distance
             newRouteTotalDistance = 0
-            for idx in range(self.numberOfCities):
+            for idx in range(numberOfCities):
                 initialCity = newRoute[idx]
                 finalCity = newRoute[idx+1]
                 newRouteTotalDistance = newRouteTotalDistance + self.distance[initialCity][finalCity]
@@ -519,7 +577,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 
             print(iterationsWithoutUpdate, temperature)
             
-        
         self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
         self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
         self.mapOfCitiesScatter.figure.canvas.draw()
@@ -543,6 +600,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.solutionDistanceLabel.setText("Distance: " + str(oldRouteTotalDistance))
         self.solutionExecutionTimeLabel.setText("Exec. time (s): " + str(finishTime-startTime))
         
+        # enable elements of the GUI after the execution of the GA algorithm
         self.numberOfCitiesSpinBox.setEnabled(True)
         self.generateButton.setEnabled(True)
         self.algorithmSelectionBox.setEnabled(True)
@@ -553,6 +611,208 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stopingCriteriaSimulatedAnnealingSpinBox.setEnabled(True)
         self.initialRouteSelectionBox.setEnabled(True)
         self.newRouteSelectionBox.setEnabled(True)
+        
+        
+    def solveGeneticAlgorithm(self):
+        
+        # disable elements of the GUI during the execution of the algorithm
+        self.numberOfCitiesSpinBox.setEnabled(False)
+        self.generateButton.setEnabled(False)
+        self.algorithmSelectionBox.setEnabled(False)
+        self.solveItButton.setEnabled(False)
+        self.solutionSelectionBox.setEnabled(False)
+        self.populationSizeGeneticAlgorithmSpinBox.setEnabled(False)
+        self.elitePercentageGeneticAlgorithmSpinBox.setEnabled(False)
+        self.mutationRateGeneticAlgorithmSpinBox.setEnabled(False)
+        self.stopingCriteriaGeneticAlgorithmSpinBox.setEnabled(False)
+        
+        startTime = time.time()
+        
+        # get user defined configuration from GUI elements
+        numberOfCities = self.numberOfCities
+        populationSize = self.populationSizeGeneticAlgorithmSpinBox.value()
+        mutationRate = self.mutationRateGeneticAlgorithmSpinBox.value()
+        elitePercentage = self.elitePercentageGeneticAlgorithmSpinBox.value()
+        eliteSize = max([1, int(round(populationSize*elitePercentage))])
+        maxIterationsWithoutUpdate = self.stopingCriteriaGeneticAlgorithmSpinBox.value()
+        
+        # INITIALIZATION: create initial population for the GA
+        # generate initial population (route, total route distance, fitness and cumulative probability)
+        oldGeneration = [[]]
+        oldGenerationDistances = []
+        oldGenerationFitness = []
+        cumulativeProbabilites = []
+        norm = 0
+        for i in range(populationSize):
+            # generate routes in initial population randomly
+            auxArray = np.random.uniform(0,1,numberOfCities)
+            route = list(np.argsort(auxArray))
+            # append initial city to the route (circular route)
+            route.append(route[0])
+            # evaluate route distance, fitness and probability (cumulative) of breeding
+            totalDistance = 0
+            for i in range(numberOfCities):
+                totalDistance = totalDistance + self.distance[route[i]][route[i+1]]
+            fitness = 1./totalDistance
+            # evaluate cummulative probability (not normalized) by adding fitness to the norm
+            norm = norm + fitness
+            # append route, total distance and cumulative probability to the population arrays
+            oldGeneration.append(route)
+            oldGenerationDistances.append(totalDistance)
+            oldGenerationFitness.append(fitness)
+            cumulativeProbabilites.append(norm)
+        # remove first route (empty) from old generation
+        oldGeneration.remove([])
+        # renormalize cumulative probability to 1
+        for i in range(populationSize):
+            cumulativeProbabilites[i] = cumulativeProbabilites[i]/norm
+        # rank old generation routes
+        oldGenerationRank = np.argsort(oldGenerationDistances)
+        
+        # initialize counter for convergence criteria
+        iterationsWithoutUpdate = 0
+        iterationArray = [0]
+        totalDistanceArray = [oldGenerationDistances[oldGenerationRank[0]]]
+        
+        # main algorithm cycle
+        while iterationsWithoutUpdate < maxIterationsWithoutUpdate:
+            # create new generation
+            newGeneration = [[]]
+            newGenerationDistances = []
+            
+            # ELITISM: copy elite population (most fit) over to the next generation
+            for i in range(eliteSize):
+                newGeneration.append(copy.deepcopy(oldGeneration[oldGenerationRank[i]]))
+            
+            # BREEDING: breed individuals of the old generation to complete the new generation 
+            for i in range(eliteSize, populationSize):
+                # select mating partners according to their probability of reproduction (proportional to their fitness)
+                rnd = np.random.uniform()
+                p1 = 0
+                for i in range(1, populationSize):
+                    if rnd>cumulativeProbabilites[i-1] and rnd<=cumulativeProbabilites[i]:
+                        p1 = i
+                        break
+                while True:
+                    rnd = np.random.uniform()
+                    p2 = 0
+                    for i in range(1, populationSize):
+                        if rnd>cumulativeProbabilites[i-1] and rnd<=cumulativeProbabilites[i]:
+                            p2 = i
+                            break
+                    if p2 != p1:
+                        break
+                # create child from matting partners by crossover of their genes
+                # select genes to copy from p1
+                genMin = np.random.choice(self.numberOfCities)
+                genMax = np.random.choice(self.numberOfCities)
+                while genMax == genMin:
+                    genMax = np.random.choice(self.numberOfCities)
+                genMin, genMax = min(genMin, genMax), max(genMin, genMax)
+                genesP1 = oldGeneration[p1][genMin:genMax+1]
+                # select genes to copy from p2
+                genesP2 = [gen for gen in oldGeneration[p2] if gen not in genesP1]
+                # create offspring
+                offspring = []
+                for gen in range(self.numberOfCities):
+                    if gen < genMin:
+                        offspring.append(genesP2[gen])
+                    elif gen <= genMax:
+                        offspring.append(genesP1[gen-genMin])
+                    else:
+                        offspring.append(genesP2[gen-(genMax-genMin)-1])
+                offspring.append(offspring[0])
+                # append offspring to new generation
+                newGeneration.append(copy.deepcopy(offspring))
+        
+            # remove first (empty) route in newGeneration
+            newGeneration.remove([])
+            
+            # MUTATION: mutate individuals of the new generation according to mutation rate
+            for i in range(populationSize):
+                if np.random.uniform() <= mutationRate:
+                    firstCity = np.random.choice(range(self.numberOfCities))
+                    secondCity = np.random.choice(range(self.numberOfCities))
+                    while secondCity == firstCity:
+                        secondCity = np.random.choice(range(self.numberOfCities))
+                    newGeneration[i][firstCity], newGeneration[i][secondCity] = newGeneration[i][secondCity], newGeneration[i][firstCity]
+                    newGeneration[i][-1] = newGeneration[i][0]
+            
+            # evaluate total distance of each chromosome in the population
+            for i in range(populationSize):
+                totalDistance = 0
+                for j in range(self.numberOfCities):
+                    totalDistance = totalDistance + self.distance[newGeneration[i][j]][newGeneration[i][j+1]]
+                newGenerationDistances.append(totalDistance)
+            
+            # RANKING: evaluate fitness of the new generation and probability (cumulative) of breeding
+            newGenerationRank = np.argsort(newGenerationDistances)
+            fitnessRoutes = []
+            cumulativeProbabilityRoutes = []
+            norm = 0
+            for i in range(populationSize):
+                fitnessRoutes.append(1./oldGenerationDistances[i])
+                cumulativeProbabilityRoutes.append(norm+fitnessRoutes[i])
+                norm = norm + fitnessRoutes[i]
+            for i in range(populationSize):
+                cumulativeProbabilityRoutes[i] = cumulativeProbabilityRoutes[i]/norm
+            
+            # select fittest individual
+            if oldGenerationDistances[oldGenerationRank[0]] <= newGenerationDistances[newGenerationRank[0]]:
+                bestRoute = copy.deepcopy(oldGeneration[oldGenerationRank[0]])
+                bestRouteDistance = oldGenerationDistances[oldGenerationRank[0]]
+                if bestRoute == newGeneration[newGenerationRank[0]]:
+                    iterationsWithoutUpdate = iterationsWithoutUpdate+1
+                else:
+                    iterationsWithoutUpdate = 0
+            else:
+                bestRoute = copy.deepcopy(newGeneration[newGenerationRank[0]])
+                bestRouteDistance = newGenerationDistances[newGenerationRank[0]]
+                iterationsWithoutUpdate = 0
+            
+            # copy new generation into old generation
+            for i in range(populationSize):
+                oldGeneration[i] = copy.deepcopy(newGeneration[i])
+                oldGenerationDistances[i] = newGenerationDistances[i]
+            
+            # output
+            iterationArray.append(iterationArray[-1]+1)
+            totalDistanceArray.append(bestRouteDistance)
+            print("Fittest chromosome of ", iterationArray[-1], " generation ->", bestRoute, "(", bestRouteDistance, ")")
+            if self.liveSolverCheckBox.isChecked():
+                self.mapOfCitiesRoute.set_xdata(self.cityXpos[bestRoute])
+                self.mapOfCitiesRoute.set_ydata(self.cityYpos[bestRoute])
+                self.mapOfCitiesScatter.figure.canvas.draw()
+                self.convergenceCurve.set_xdata(iterationArray)
+                self.convergenceCurve.set_ydata(totalDistanceArray)
+                self.convergenceAxes.set(xlim=(1,iterationArray[-1]), ylim=(0,np.amax(totalDistanceArray)))
+                self.convergenceAxes.figure.canvas.draw()
+                QtCore.QCoreApplication.processEvents()
+
+        finishTime = time.time()
+        
+        self.solutionsGeneticAlgorithmRoute = oldRoute
+        self.solutionsGeneticAlgorithmDistance = oldRouteTotalDistance
+        self.solutionsGeneticAlgorithmExecutionTime = finishTime-startTime
+        for i in range(self.solutionSelectionBox.count()):
+            if self.solutionSelectionBox.itemText(i) == "Genetic algorithm":
+                self.solutionSelectionBox.removeItem(i)
+        self.solutionSelectionBox.addItem("Genetic Algorithm")
+        self.solutionRouteLabel.setText("Route: " + str([i+1 for i in bestRoute]))
+        self.solutionDistanceLabel.setText("Distance: " + str(bestRouteDistance))
+        self.solutionExecutionTimeLabel.setText("Exec. time (s): " + str(finishTime-startTime))
+        
+        # enable elements of the GUI after the execution of the GA algorithm
+        self.numberOfCitiesSpinBox.setEnabled(True)
+        self.generateButton.setEnabled(True)
+        self.algorithmSelectionBox.setEnabled(True)
+        self.solveItButton.setEnabled(True)
+        self.solutionSelectionBox.setEnabled(True)
+        self.populationSizeGeneticAlgorithmSpinBox.setEnabled(True)
+        self.elitePercentageGeneticAlgorithmSpinBox.setEnabled(True)
+        self.mutationRateGeneticAlgorithmSpinBox.setEnabled(True)
+        self.stopingCriteriaGeneticAlgorithmSpinBox.setEnabled(True)
+
         
     def solutionSelectedChanged(self):
         
