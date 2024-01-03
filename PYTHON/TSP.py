@@ -640,7 +640,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # generate initial population (route, total route distance, fitness and cumulative probability)
         oldGeneration = [[]]
         oldGenerationDistances = []
-        oldGenerationFitness = []
+        fitness = []
         cumulativeProbabilites = []
         norm = 0
         for i in range(populationSize):
@@ -653,13 +653,12 @@ class MainWindow(QtWidgets.QMainWindow):
             totalDistance = 0
             for i in range(numberOfCities):
                 totalDistance = totalDistance + self.distance[route[i]][route[i+1]]
-            fitness = 1./totalDistance
             # evaluate cummulative probability (not normalized) by adding fitness to the norm
-            norm = norm + fitness
+            norm = norm + 1./totalDistance
             # append route, total distance and cumulative probability to the population arrays
             oldGeneration.append(route)
             oldGenerationDistances.append(totalDistance)
-            oldGenerationFitness.append(fitness)
+            fitness.append(1./totalDistance)
             cumulativeProbabilites.append(norm)
         # remove first route (empty) from old generation
         oldGeneration.remove([])
@@ -668,6 +667,10 @@ class MainWindow(QtWidgets.QMainWindow):
             cumulativeProbabilites[i] = cumulativeProbabilites[i]/norm
         # rank old generation routes
         oldGenerationRank = np.argsort(oldGenerationDistances)
+        
+        # select best route in the population
+        bestRoute = copy.deepcopy(oldGeneration[oldGenerationRank[0]])
+        bestRouteDistance = oldGenerationDistances[oldGenerationRank[0]]
         
         # initialize counter for convergence criteria
         iterationsWithoutUpdate = 0
@@ -729,7 +732,7 @@ class MainWindow(QtWidgets.QMainWindow):
             newGeneration.remove([])
             
             # MUTATION: mutate individuals of the new generation according to mutation rate
-            for i in range(populationSize):
+            for i in range(eliteSize, populationSize):
                 if np.random.uniform() <= mutationRate:
                     firstCity = np.random.choice(range(self.numberOfCities))
                     secondCity = np.random.choice(range(self.numberOfCities))
@@ -747,41 +750,41 @@ class MainWindow(QtWidgets.QMainWindow):
             
             # RANKING: evaluate fitness of the new generation and probability (cumulative) of breeding
             newGenerationRank = np.argsort(newGenerationDistances)
-            fitnessRoutes = []
-            cumulativeProbabilityRoutes = []
+            fitness = []
+            cumulativeProbabilities = []
             norm = 0
             for i in range(populationSize):
-                fitnessRoutes.append(1./oldGenerationDistances[i])
-                cumulativeProbabilityRoutes.append(norm+fitnessRoutes[i])
-                norm = norm + fitnessRoutes[i]
+                fitness.append(1./newGenerationDistances[i])
+                cumulativeProbabilities.append(norm+fitness[i])
+                norm = norm + fitness[i]
             for i in range(populationSize):
-                cumulativeProbabilityRoutes[i] = cumulativeProbabilityRoutes[i]/norm
+                cumulativeProbabilities[i] = cumulativeProbabilities[i]/norm
             
             # select fittest individual
-            if oldGenerationDistances[oldGenerationRank[0]] <= newGenerationDistances[newGenerationRank[0]]:
-                bestRoute = copy.deepcopy(oldGeneration[oldGenerationRank[0]])
-                bestRouteDistance = oldGenerationDistances[oldGenerationRank[0]]
-                if bestRoute == newGeneration[newGenerationRank[0]]:
-                    iterationsWithoutUpdate = iterationsWithoutUpdate+1
-                else:
-                    iterationsWithoutUpdate = 0
-            else:
+            if newGenerationDistances[newGenerationRank[0]] < bestRouteDistance:
                 bestRoute = copy.deepcopy(newGeneration[newGenerationRank[0]])
                 bestRouteDistance = newGenerationDistances[newGenerationRank[0]]
                 iterationsWithoutUpdate = 0
-            
+            elif newGenerationDistances[newGenerationRank[0]] == bestRouteDistance and newGeneration[newGenerationRank[0]] != bestRoute:
+                bestRoute = copy.deepcopy(newGeneration[newGenerationRank[0]])
+                bestRouteDistance = newGenerationDistances[newGenerationRank[0]]
+                iterationsWithoutUpdate = 0
+            else:
+                iterationsWithoutUpdate = iterationsWithoutUpdate+1
+                
             # copy new generation into old generation
             for i in range(populationSize):
                 oldGeneration[i] = copy.deepcopy(newGeneration[i])
                 oldGenerationDistances[i] = newGenerationDistances[i]
+                oldGenerationRank[i] = newGenerationRank[i]
             
             # output
             iterationArray.append(iterationArray[-1]+1)
-            totalDistanceArray.append(bestRouteDistance)
+            totalDistanceArray.append(newGenerationDistances[newGenerationRank[0]])
             print("Fittest chromosome of ", iterationArray[-1], " generation ->", bestRoute, "(", bestRouteDistance, ")")
             if self.liveSolverCheckBox.isChecked():
-                self.mapOfCitiesRoute.set_xdata(self.cityXpos[bestRoute])
-                self.mapOfCitiesRoute.set_ydata(self.cityYpos[bestRoute])
+                self.mapOfCitiesRoute.set_xdata(self.cityXpos[newGeneration[newGenerationRank[0]]])
+                self.mapOfCitiesRoute.set_ydata(self.cityYpos[newGeneration[newGenerationRank[0]]])
                 self.mapOfCitiesScatter.figure.canvas.draw()
                 self.convergenceCurve.set_xdata(iterationArray)
                 self.convergenceCurve.set_ydata(totalDistanceArray)
@@ -791,13 +794,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         finishTime = time.time()
         
-        self.solutionsGeneticAlgorithmRoute = oldRoute
-        self.solutionsGeneticAlgorithmDistance = oldRouteTotalDistance
+        self.solutionsGeneticAlgorithmRoute = bestRoute
+        self.solutionsGeneticAlgorithmDistance = bestRouteDistance
         self.solutionsGeneticAlgorithmExecutionTime = finishTime-startTime
         for i in range(self.solutionSelectionBox.count()):
             if self.solutionSelectionBox.itemText(i) == "Genetic algorithm":
                 self.solutionSelectionBox.removeItem(i)
-        self.solutionSelectionBox.addItem("Genetic Algorithm")
+        self.solutionSelectionBox.addItem("Genetic algorithm")
         self.solutionRouteLabel.setText("Route: " + str([i+1 for i in bestRoute]))
         self.solutionDistanceLabel.setText("Distance: " + str(bestRouteDistance))
         self.solutionExecutionTimeLabel.setText("Exec. time (s): " + str(finishTime-startTime))
@@ -828,6 +831,10 @@ class MainWindow(QtWidgets.QMainWindow):
             route = self.solutionsSimulatedAnnealingRoute
             distance = self.solutionsSimulatedAnnealingDistance
             executionTime = self.solutionsSimulatedAnnealingExecutionTime
+        elif self.solutionSelectionBox.currentText() == "Genetic algorithm":
+            route = self.solutionsGeneticAlgorithmRoute
+            distance = self.solutionsGeneticAlgorithmDistance
+            executionTime = self.solutionsGeneticAlgorithmExecutionTime
         self.solutionRouteLabel.setText("Route: " + str([i+1 for i in route]))
         self.solutionDistanceLabel.setText("Distance: " + str(distance))
         self.solutionExecutionTimeLabel.setText("Exec. Time (s): " + str(executionTime))
