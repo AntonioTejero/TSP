@@ -544,7 +544,6 @@ class MainWindow(QtWidgets.QMainWindow):
             if newRouteTotalDistance <= oldRouteTotalDistance:
                 oldRoute = copy.copy(newRoute)
                 oldRouteTotalDistance = newRouteTotalDistance
-                temperature = temperature*coolingRate
                 if self.liveSolverCheckBox.isChecked():
                     self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
                     self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
@@ -554,7 +553,6 @@ class MainWindow(QtWidgets.QMainWindow):
             elif np.random.uniform(0,1,1)<np.exp(-(newRouteTotalDistance-oldRouteTotalDistance)/temperature):
                 oldRoute = copy.copy(newRoute)
                 oldRouteTotalDistance = newRouteTotalDistance
-                temperature = temperature*coolingRate
                 if self.liveSolverCheckBox.isChecked():
                     self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
                     self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
@@ -562,8 +560,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     QtCore.QCoreApplication.processEvents()
                 iterationsWithoutUpdate = 0
             else:
-                temperature = temperature*coolingRate
                 iterationsWithoutUpdate = iterationsWithoutUpdate+1
+            temperature = temperature*coolingRate
 
             # update convergence data and graph
             iterationArray.append(iterationArray[-1]+1)
