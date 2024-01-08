@@ -87,19 +87,31 @@ class MainWindow(QtWidgets.QMainWindow):
         initialTemperatureLabel = QtWidgets.QLabel("Initial temperature:")
         initialTemperatureLayout.addWidget(initialTemperatureLabel)
         initialTemperatureSpinBox = QtWidgets.QDoubleSpinBox()
-        initialTemperatureSpinBox.setRange(0.1,1000)
+        initialTemperatureSpinBox.setRange(0.1,100)
         initialTemperatureSpinBox.setSingleStep(0.1)
         initialTemperatureSpinBox.setDecimals(1)
+        initialTemperatureSpinBox.setValue(1)
         initialTemperatureLayout.addWidget(initialTemperatureSpinBox)
         self.initialTemperatureSpinBox = initialTemperatureSpinBox
+        thermalizingIterationsLayout = QtWidgets.QHBoxLayout()
+        solverConfLayoutSimulatedAnnealing.addLayout(thermalizingIterationsLayout)
+        thermalizingIterationsLabel = QtWidgets.QLabel("Thermalizing iterations:")
+        thermalizingIterationsLayout.addWidget(thermalizingIterationsLabel)
+        thermalizingIterationsSpinBox = QtWidgets.QSpinBox()
+        thermalizingIterationsSpinBox.setMinimum(1)
+        thermalizingIterationsSpinBox.setMaximum(500)
+        thermalizingIterationsSpinBox.setValue(100)
+        thermalizingIterationsLayout.addWidget(thermalizingIterationsSpinBox)
+        self.thermalizingIterationsSpinBox = thermalizingIterationsSpinBox
         coolingRateLayout = QtWidgets.QHBoxLayout()
         solverConfLayoutSimulatedAnnealing.addLayout(coolingRateLayout)
         coolingRateLabel = QtWidgets.QLabel("Cooling rate:")
         coolingRateLayout.addWidget(coolingRateLabel)
         coolingRateSpinBox = QtWidgets.QDoubleSpinBox()
-        coolingRateSpinBox.setRange(0.8, 0.999)
-        coolingRateSpinBox.setSingleStep(0.001)
-        coolingRateSpinBox.setDecimals(3)
+        coolingRateSpinBox.setRange(0.8, 0.99)
+        coolingRateSpinBox.setSingleStep(0.01)
+        coolingRateSpinBox.setDecimals(2)
+        coolingRateSpinBox.setValue(0.9)
         coolingRateLayout.addWidget(coolingRateSpinBox)
         self.coolingRateSpinBox = coolingRateSpinBox
         initialRouteLayout = QtWidgets.QHBoxLayout()
@@ -126,8 +138,9 @@ class MainWindow(QtWidgets.QMainWindow):
         stopingCriteriaSimulatedAnnealingLabel = QtWidgets.QLabel("Stoping criteria:")
         stopingCriteriaSimulatedAnnealingLayout.addWidget(stopingCriteriaSimulatedAnnealingLabel)
         stopingCriteriaSimulatedAnnealingSpinBox = QtWidgets.QSpinBox()
-        stopingCriteriaSimulatedAnnealingSpinBox.setMinimum(10)
+        stopingCriteriaSimulatedAnnealingSpinBox.setMinimum(2)
         stopingCriteriaSimulatedAnnealingSpinBox.setMaximum(10000)
+        stopingCriteriaSimulatedAnnealingSpinBox.setValue(5)
         stopingCriteriaSimulatedAnnealingLayout.addWidget(stopingCriteriaSimulatedAnnealingSpinBox)
         self.stopingCriteriaSimulatedAnnealingSpinBox = stopingCriteriaSimulatedAnnealingSpinBox
         solverConfWidgetGeneticAlgorithm = QtWidgets.QWidget()
@@ -150,9 +163,9 @@ class MainWindow(QtWidgets.QMainWindow):
         elitePercentageGeneticAlgorithmLayout.addWidget(elitePercentageGeneticAlgorithmLabel)
         elitePercentageGeneticAlgorithmSpinBox = QtWidgets.QDoubleSpinBox()
         elitePercentageGeneticAlgorithmSpinBox.setRange(0,1)
-        elitePercentageGeneticAlgorithmSpinBox.setSingleStep(0.001)
-        elitePercentageGeneticAlgorithmSpinBox.setDecimals(3)
-        elitePercentageGeneticAlgorithmSpinBox.setValue(0.01)
+        elitePercentageGeneticAlgorithmSpinBox.setSingleStep(0.01)
+        elitePercentageGeneticAlgorithmSpinBox.setDecimals(2)
+        elitePercentageGeneticAlgorithmSpinBox.setValue(0.05)
         elitePercentageGeneticAlgorithmLayout.addWidget(elitePercentageGeneticAlgorithmSpinBox)
         self.elitePercentageGeneticAlgorithmSpinBox = elitePercentageGeneticAlgorithmSpinBox
         mutationRateGeneticAlgorithmLayout = QtWidgets.QHBoxLayout()
@@ -161,8 +174,8 @@ class MainWindow(QtWidgets.QMainWindow):
         mutationRateGeneticAlgorithmLayout.addWidget(mutationRateGeneticAlgorithmLabel)
         mutationRateGeneticAlgorithmSpinBox = QtWidgets.QDoubleSpinBox()
         mutationRateGeneticAlgorithmSpinBox.setRange(0,1)
-        mutationRateGeneticAlgorithmSpinBox.setSingleStep(0.001)
-        mutationRateGeneticAlgorithmSpinBox.setDecimals(3)
+        mutationRateGeneticAlgorithmSpinBox.setSingleStep(0.01)
+        mutationRateGeneticAlgorithmSpinBox.setDecimals(2)
         mutationRateGeneticAlgorithmSpinBox.setValue(0.05)
         mutationRateGeneticAlgorithmLayout.addWidget(mutationRateGeneticAlgorithmSpinBox)
         self.mutationRateGeneticAlgorithmSpinBox = mutationRateGeneticAlgorithmSpinBox
@@ -173,7 +186,7 @@ class MainWindow(QtWidgets.QMainWindow):
         stopingCriteriaGeneticAlgorithmSpinBox = QtWidgets.QSpinBox()
         stopingCriteriaGeneticAlgorithmSpinBox.setMinimum(10)
         stopingCriteriaGeneticAlgorithmSpinBox.setMaximum(10000)
-        stopingCriteriaGeneticAlgorithmSpinBox.setValue(1000)
+        stopingCriteriaGeneticAlgorithmSpinBox.setValue(100)
         stopingCriteriaGeneticAlgorithmLayout.addWidget(stopingCriteriaGeneticAlgorithmSpinBox)
         self.stopingCriteriaGeneticAlgorithmSpinBox = stopingCriteriaGeneticAlgorithmSpinBox
         
@@ -459,6 +472,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.solveItButton.setEnabled(False)
         self.solutionSelectionBox.setEnabled(False)
         self.initialTemperatureSpinBox.setEnabled(False)
+        self.thermalizingIterationsSpinBox.setEnabled(False)
         self.coolingRateSpinBox.setEnabled(False)
         self.stopingCriteriaSimulatedAnnealingSpinBox.setEnabled(False)
         self.initialRouteSelectionBox.setEnabled(False)
@@ -469,8 +483,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # get user defined configuration from GUI elements
         numberOfCities = self.numberOfCities
         temperature = self.initialTemperatureSpinBox.value()
+        thermalizingIterations = self.thermalizingIterationsSpinBox.value()
         coolingRate = self.coolingRateSpinBox.value()
-        maxIterationsWithoutUpdate = self.stopingCriteriaSimulatedAnnealingSpinBox.value()
+        maxThermalizationCyclesWithoutUpdate = self.stopingCriteriaSimulatedAnnealingSpinBox.value()
         initialRouteMethod = self.initialRouteSelectionBox.currentText()
         newRouteMethod = self.newRouteSelectionBox.currentText()
         
@@ -498,82 +513,86 @@ class MainWindow(QtWidgets.QMainWindow):
             oldRouteTotalDistance = oldRouteTotalDistance + self.distance[i][j]
         
         # initialize counter for convergence criteria
-        iterationsWithoutUpdate = 0
+        thermalizationCyclesWithoutUpdate = 0
         iterationArray = [0]
         totalDistanceArray = [oldRouteTotalDistance]
         
         # main algorithm cycle
-        while iterationsWithoutUpdate < maxIterationsWithoutUpdate:
-            # generate new route
-            if newRouteMethod == "Random":
-                # random new route
-                auxArray = np.random.uniform(0,1,numberOfCities)
-                newRoute = list(np.argsort(auxArray))
-                newRoute.append(newRoute[0])
-            elif newRouteMethod == "Swap":
-                # generate random indices for swap and inverse operators
-                i = np.random.choice(range(numberOfCities-1))
-                while i==0:
-                    i = np.random.choice(range(numberOfCities))
-                j = np.random.choice(range(numberOfCities-1))
-                while j==i or j==0:
-                    j = np.random.choice(range(numberOfCities))
-                # swap new route
-                newRoute = copy.copy(oldRoute)
-                newRoute[j], newRoute[i] = newRoute[i], newRoute[j]
-            elif newRouteMethod == "Inverse":
-                # generate random indices for swap and inverse operators
-                i = np.random.choice(range(numberOfCities-1))
-                while i==0:
-                    i = np.random.choice(range(numberOfCities))
-                j = np.random.choice(range(numberOfCities-1))
-                while j==i or j==0:
-                    j = np.random.choice(range(numberOfCities))
-                # inverse new route
-                newRoute = copy.copy(oldRoute)
-                newRoute[min(i,j):max(i,j)+1] = newRoute[max(i,j):min(i,j)-1:-1]
-            
-            # evaluate new route total distance
-            newRouteTotalDistance = 0
-            for idx in range(numberOfCities):
-                initialCity = newRoute[idx]
-                finalCity = newRoute[idx+1]
-                newRouteTotalDistance = newRouteTotalDistance + self.distance[initialCity][finalCity]
+        while thermalizationCyclesWithoutUpdate < maxThermalizationCyclesWithoutUpdate:
+            routeBeforeThermalization = copy.deepcopy(oldRoute)
+            totalDistanceBeforeThermalization = oldRouteTotalDistance
+            for thermalizationIndex in range(thermalizingIterations):
+                # generate new route
+                if newRouteMethod == "Random":
+                    # random new route
+                    auxArray = np.random.uniform(0,1,numberOfCities)
+                    newRoute = list(np.argsort(auxArray))
+                    newRoute.append(newRoute[0])
+                elif newRouteMethod == "Swap":
+                    # generate random indices for swap and inverse operators
+                    i = np.random.choice(range(numberOfCities-1))
+                    while i==0:
+                        i = np.random.choice(range(numberOfCities))
+                    j = np.random.choice(range(numberOfCities-1))
+                    while j==i or j==0:
+                        j = np.random.choice(range(numberOfCities))
+                    # swap new route
+                    newRoute = copy.copy(oldRoute)
+                    newRoute[j], newRoute[i] = newRoute[i], newRoute[j]
+                elif newRouteMethod == "Inverse":
+                    # generate random indices for swap and inverse operators
+                    i = np.random.choice(range(numberOfCities-1))
+                    while i==0:
+                        i = np.random.choice(range(numberOfCities))
+                    j = np.random.choice(range(numberOfCities-1))
+                    while j==i or j==0:
+                        j = np.random.choice(range(numberOfCities))
+                    # inverse new route
+                    newRoute = copy.copy(oldRoute)
+                    newRoute[min(i,j):max(i,j)+1] = newRoute[max(i,j):min(i,j)-1:-1]
                 
-            # decide wheter the new route gets selected or not
-            if newRouteTotalDistance <= oldRouteTotalDistance:
-                oldRoute = copy.copy(newRoute)
-                oldRouteTotalDistance = newRouteTotalDistance
-                if self.liveSolverCheckBox.isChecked():
-                    self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
-                    self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
-                    self.mapOfCitiesScatter.figure.canvas.draw()
-                    QtCore.QCoreApplication.processEvents()
-                iterationsWithoutUpdate = 0
-            elif np.random.uniform(0,1,1)<np.exp(-(newRouteTotalDistance-oldRouteTotalDistance)/temperature):
-                oldRoute = copy.copy(newRoute)
-                oldRouteTotalDistance = newRouteTotalDistance
-                if self.liveSolverCheckBox.isChecked():
-                    self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
-                    self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
-                    self.mapOfCitiesScatter.figure.canvas.draw()
-                    QtCore.QCoreApplication.processEvents()
-                iterationsWithoutUpdate = 0
-            else:
-                iterationsWithoutUpdate = iterationsWithoutUpdate+1
-            temperature = temperature*coolingRate
+                # evaluate new route total distance
+                newRouteTotalDistance = 0
+                for idx in range(numberOfCities):
+                    initialCity = newRoute[idx]
+                    finalCity = newRoute[idx+1]
+                    newRouteTotalDistance = newRouteTotalDistance + self.distance[initialCity][finalCity]
+                    
+                # decide wheter the new route gets selected or not
+                if newRouteTotalDistance <= oldRouteTotalDistance:
+                    oldRoute = copy.copy(newRoute)
+                    oldRouteTotalDistance = newRouteTotalDistance
+                    if self.liveSolverCheckBox.isChecked():
+                        self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
+                        self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
+                        self.mapOfCitiesScatter.figure.canvas.draw()
+                        QtCore.QCoreApplication.processEvents()
+                elif np.random.uniform(0,1,1)<np.exp(-(newRouteTotalDistance-oldRouteTotalDistance)/temperature):
+                    oldRoute = copy.copy(newRoute)
+                    oldRouteTotalDistance = newRouteTotalDistance
+                    if self.liveSolverCheckBox.isChecked():
+                        self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
+                        self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
+                        self.mapOfCitiesScatter.figure.canvas.draw()
+                        QtCore.QCoreApplication.processEvents()
 
-            # update convergence data and graph
-            iterationArray.append(iterationArray[-1]+1)
-            totalDistanceArray.append(oldRouteTotalDistance)
-            if self.liveSolverCheckBox.isChecked():
-                self.convergenceCurve.set_xdata(iterationArray)
-                self.convergenceCurve.set_ydata(totalDistanceArray)
-                self.convergenceAxes.set(xlim=(1,iterationArray[-1]), ylim=(0,np.amax(totalDistanceArray)))
-                self.convergenceAxes.figure.canvas.draw()
-                QtCore.QCoreApplication.processEvents()
+                # update convergence data and graph
+                iterationArray.append(iterationArray[-1]+1)
+                totalDistanceArray.append(oldRouteTotalDistance)
+                if self.liveSolverCheckBox.isChecked():
+                    self.convergenceCurve.set_xdata(iterationArray)
+                    self.convergenceCurve.set_ydata(totalDistanceArray)
+                    self.convergenceAxes.set(xlim=(1,iterationArray[-1]), ylim=(0,np.amax(totalDistanceArray)))
+                    self.convergenceAxes.figure.canvas.draw()
+                    QtCore.QCoreApplication.processEvents()
+            
+            if oldRoute != routeBeforeThermalization:
+                thermalizationCyclesWithoutUpdate = 0
+            else:
+                thermalizationCyclesWithoutUpdate = thermalizationCyclesWithoutUpdate + 1
                 
-            print(iterationsWithoutUpdate, temperature)
+            temperature = temperature*coolingRate
+            print(thermalizationCyclesWithoutUpdate, temperature)
             
         self.mapOfCitiesRoute.set_xdata(self.cityXpos[oldRoute])
         self.mapOfCitiesRoute.set_ydata(self.cityYpos[oldRoute])
@@ -605,6 +624,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.solveItButton.setEnabled(True)
         self.solutionSelectionBox.setEnabled(True)
         self.initialTemperatureSpinBox.setEnabled(True)
+        self.thermalizingIterationsSpinBox.setEnabled(True)
         self.coolingRateSpinBox.setEnabled(True)
         self.stopingCriteriaSimulatedAnnealingSpinBox.setEnabled(True)
         self.initialRouteSelectionBox.setEnabled(True)
