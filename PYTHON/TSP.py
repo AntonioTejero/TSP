@@ -191,7 +191,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stopingCriteriaGeneticAlgorithmSpinBox = stopingCriteriaGeneticAlgorithmSpinBox
         
         self.solverConfLayout = solverConfLayout
-        solverConfLayoutSimulatedAnnealing.addStretch()
         solveItButton = QtWidgets.QPushButton("Solve it!")
         solveItButton.setEnabled(False)
         solverLayout.addWidget(solveItButton)
@@ -200,7 +199,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         solutionsGroup = QtWidgets.QGroupBox("Solutions:")
         solutionsGroup.setMinimumSize(QtCore.QSize(220,0))
-        solutionsGroup.setMaximumSize(QtCore.QSize(220,2000))
+        solutionsGroup.setMaximumSize(QtCore.QSize(220,150))
         leftLayout.addWidget(solutionsGroup)
         solutionsLayout = QtWidgets.QVBoxLayout(solutionsGroup)
         solutionsLayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
