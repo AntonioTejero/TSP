@@ -658,7 +658,7 @@ class MainWindow(QtWidgets.QMainWindow):
         oldGeneration = [[]]
         oldGenerationDistances = []
         fitness = []
-        cumulativeProbabilites = []
+        cumulativeProbabilities = []
         norm = 0
         for i in range(populationSize):
             # generate routes in initial population randomly
@@ -676,12 +676,12 @@ class MainWindow(QtWidgets.QMainWindow):
             oldGeneration.append(route)
             oldGenerationDistances.append(totalDistance)
             fitness.append(1./totalDistance)
-            cumulativeProbabilites.append(norm)
+            cumulativeProbabilities.append(norm)
         # remove first route (empty) from old generation
         oldGeneration.remove([])
         # renormalize cumulative probability to 1
         for i in range(populationSize):
-            cumulativeProbabilites[i] = cumulativeProbabilites[i]/norm
+            cumulativeProbabilities[i] = cumulativeProbabilities[i]/norm
         # rank old generation routes
         oldGenerationRank = np.argsort(oldGenerationDistances)
         
@@ -710,14 +710,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 rnd = np.random.uniform()
                 p1 = 0
                 for i in range(1, populationSize):
-                    if rnd>cumulativeProbabilites[i-1] and rnd<=cumulativeProbabilites[i]:
+                    if rnd>cumulativeProbabilities[i-1] and rnd<=cumulativeProbabilities[i]:
                         p1 = i
                         break
                 while True:
                     rnd = np.random.uniform()
                     p2 = 0
                     for i in range(1, populationSize):
-                        if rnd>cumulativeProbabilites[i-1] and rnd<=cumulativeProbabilites[i]:
+                        if rnd>cumulativeProbabilities[i-1] and rnd<=cumulativeProbabilities[i]:
                             p2 = i
                             break
                     if p2 != p1:
