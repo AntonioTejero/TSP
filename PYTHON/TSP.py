@@ -1,17 +1,14 @@
 import sys
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import numpy as np
 import time
 import copy
-
-from matplotlib.backends.backend_qtagg import FigureCanvas, NavigationToolbar2QT
-from matplotlib.figure import Figure
-from matplotlib.backends.qt_compat import QtWidgets
-from matplotlib.backends.qt_compat import QtGui
-from matplotlib.backends.qt_compat import QtCore
 from itertools import permutations
+
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.backends.qt_compat import QtWidgets, QtGui, QtCore
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -224,12 +221,12 @@ class MainWindow(QtWidgets.QMainWindow):
         graphicsLayout = QtWidgets.QHBoxLayout(graphisGroup)
         mapOfCitiesLayout = QtWidgets.QVBoxLayout()
         graphicsLayout.addLayout(mapOfCitiesLayout)
-        mapOfCitiesCanvas = FigureCanvas(Figure(figsize=(5, 5)))
+        mapOfCitiesCanvas = FigureCanvasQTAgg(Figure(figsize=(5, 5)))
         mapOfCitiesLayout.addWidget(mapOfCitiesCanvas)
         mapOfCitiesLayout.addWidget(NavigationToolbar2QT(mapOfCitiesCanvas, self))
         convergenceLayout = QtWidgets.QVBoxLayout()
         graphicsLayout.addLayout(convergenceLayout)
-        convergenceCanvas = FigureCanvas(Figure(figsize=(5, 5)))
+        convergenceCanvas = FigureCanvasQTAgg(Figure(figsize=(5, 5)))
         convergenceLayout.addWidget(convergenceCanvas)
         convergenceLayout.addWidget(NavigationToolbar2QT(convergenceCanvas, self))
         
