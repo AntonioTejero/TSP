@@ -852,6 +852,8 @@ class MainWindow(QtWidgets.QMainWindow):
             route = self.solutionsGeneticAlgorithmRoute
             distance = self.solutionsGeneticAlgorithmDistance
             executionTime = self.solutionsGeneticAlgorithmExecutionTime
+        elif self.solutionSelectionBox.currentText() == "":
+            return
         self.solutionRouteLabel.setText("Route: " + str([i+1 for i in route]))
         self.solutionDistanceLabel.setText("Distance: " + str(distance))
         self.solutionExecutionTimeLabel.setText("Exec. Time (s): " + str(executionTime))
