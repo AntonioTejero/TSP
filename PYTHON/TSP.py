@@ -862,10 +862,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mapOfCitiesScatter.figure.canvas.draw()
         QtCore.QCoreApplication.processEvents()
         
-            
-qapp = QtWidgets.QApplication(sys.argv)
-appWindow = MainWindow()
-appWindow.show()
-appWindow.activateWindow()
-appWindow.raise_()
-qapp.exec()
+
+if __name__ == "__main__":    
+    qapp = QtWidgets.QApplication(sys.argv)
+    appWindow = MainWindow()
+    appWindow.show()
+    appWindow.activateWindow()
+    appWindow.raise_()
+    qapp.exec()
